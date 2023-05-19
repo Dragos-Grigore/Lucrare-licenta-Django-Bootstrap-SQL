@@ -4,11 +4,6 @@
   <h2>Sign up</h2>
   <form method="POST">
     {% csrf_token %}
-    {{ form.full_name.label_tag }} {{ form.full_name }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.full_name }}</div>
-    {% endif %}
-    <br><br>
     {{ form.email.label_tag }} {{ form.email }}
     {% if form.errors %}
         <div class="error-message">{{ form.errors.email }}</div>
