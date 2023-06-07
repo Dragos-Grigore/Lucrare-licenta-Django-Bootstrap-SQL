@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Forgot password</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.email.label_tag }} {{ form.email }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.email }}</div>
+    {% endif %}
+    <br><br>
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

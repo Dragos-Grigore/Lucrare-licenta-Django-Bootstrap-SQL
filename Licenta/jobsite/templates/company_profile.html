@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>The queryset object:</p>
+
+  {{ mymembers }}
+  
+  <p>Loop through the items:</p>
+  
+  <table border='1'>
+    <tr>
+      <th>email</th>
+      <th>name</th>
+      <th>industry</th>
+      <th>phone</th>
+      <th>desc</th>
+    </tr>
+    {% for x in mymembers %}
+      <tr>
+        <td>{{ x.email }}</td>
+        <td>{{ x.company_name }}</td>
+        <td>{{ x.industry }}</td>
+        <td>{{ x.phone_number }}</td>
+        <td>{{ x.description }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  {% endblock %}

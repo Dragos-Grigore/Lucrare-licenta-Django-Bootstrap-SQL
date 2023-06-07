@@ -1,8 +1,16 @@
 from django.shortcuts import render, redirect
-from jobsite.forms import UserForm,LoginForm,HumanForm
-from .models import User
+from jobsite.forms import UserForm,LoginForm,HumanForm,CompanyForm,Forgot_passForm,Change_passForm,log2FAForm,AdForm,SearchBarForm
+from .models import User,Company,Ad,Application
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import connection
+from .rsa_utils import RSAUtils
+from django.contrib.auth.hashers import make_password
+import random
+from django.core.exceptions import ValidationError
+from datetime import date
+from django.db.models import Q
+
 
 
 def say_hello(request):
@@ -23,18 +31,23 @@ def sign_up(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user_type = form.cleaned_data['type']
+            coded_password=make_password(password)
             subject = 'welcome to GFG world'
-            message = f'Hi  thank you for registering in geeksforgeeks.'
+            message = f'Hi thank you for registering in geeksforgeeks.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [email, ]
             send_mail( subject, message, email_from, recipient_list )
             request.session['email'] = email # set 'token' in the session
-
+            if user_type=='human' or user_type=='Human':
             # create a new user object and save it to the database
-            user = User(email=email, password=password, type=user_type)
-            user.save()
-            
-            return redirect('human_profile')
+                user = User(email=email, password=coded_password, type=user_type)
+                user.save()
+                return redirect('edit_human_profile')
+            elif user_type=='company' or user_type=='Company':
+            # create a new user object and save it to the database
+                user = Company(email=email, password=coded_password, type=user_type)
+                user.save()
+                return redirect('edit_company_profile')
     else:
         form = UserForm()
     return render(request, 'sign_up.html', {'form': form})
@@ -46,39 +59,359 @@ def login_view(request):
 
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            return redirect('main_page')
+            random_number = random.randint(1000, 9999)
+            subject = 'Reset password'
+            message = f'Your code is: {random_number}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [email, ]
+            send_mail( subject, message, email_from, recipient_list )
+            request.session['random_number'] = random_number
+            request.session['email'] = email # set 'token' in the session
+ # set 'token' in the session
+            return redirect('log2FA')
     else:
         form = LoginForm()
     return render(request, 'log.html',{'form': form})
 
-def human_profile(request):
+def log2FA(request):
+    random_number=request.session['random_number'] # set 'token' in the session
+    if request.method == 'POST':
+        form = log2FAForm(request.POST)
+        if form.is_valid():
+            email=request.session['email']
+            code=form.cleaned_data['code']
+            code = int(code)
+            if code != random_number:
+                return redirect ('error_log2FA')
+            if User.objects.filter(email=email).exists():
+                return redirect('main_page_human')
+            elif Company.objects.filter(email=email).exists():
+                return redirect('main_page_company')
+    else:
+        form = log2FAForm()
+    return render(request, 'log2FA.html',{'form': form})
+
+def error_log2FA(request):
+    random_number=request.session['random_number'] # set 'token' in the session
+    if request.method == 'POST':
+        form = log2FAForm(request.POST)
+        if form.is_valid():
+            email=request.session['email']
+            code=form.cleaned_data['code']
+            code = int(code)
+            if code != random_number:
+                return redirect ('error_log2FA')
+            elif User.objects.filter(email=email).exists():
+                return redirect('main_page_human')
+            elif Company.objects.filter(email=email).exists():
+                return redirect('main_page_company')
+    else:
+        form = log2FAForm()
+    return render(request, 'error_log2FA.html',{'form': form})
+
+
+def forgot_pass(request):
+        if request.method == 'POST':
+            form = Forgot_passForm(request.POST)
+            if form.is_valid():
+                email = form.cleaned_data['email']
+                random_number = random.randint(1000, 9999)
+                subject = 'Reset password'
+                message = f'Your code is: {random_number}'
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email, ]
+                send_mail( subject, message, email_from, recipient_list )
+                request.session['email'] = email # set 'token' in the session
+                request.session['random_number'] = random_number # set 'token' in the session
+                return redirect('change_pass')
+        else:
+            form = Forgot_passForm()
+        return render(request, 'forgot_pass.html',{'form': form})
+
+def change_pass(request):
+    random_number=request.session.get('random_number') # set 'token' in the session
+    if request.method == 'POST':
+        form = Change_passForm(request.POST)
+        if form.is_valid():
+            email=request.session['email'] # set 'token' in the session
+            password=form.cleaned_data['password']
+            code=form.cleaned_data['code']
+            code = int(code)
+            if code != random_number:
+                return redirect ('error_change_pass')
+            else:
+                cursor = connection.cursor()
+                coded_password=make_password(password)
+                if User.objects.filter(email=email).exists(): 
+                    cursor.execute("UPDATE jobsite_user SET password = %s WHERE email = %s", [coded_password, email])
+                elif Company.objects.filter(email=email).exists():
+                    cursor.execute("UPDATE jobsite_company SET password = %s WHERE email = %s", [coded_password, email])
+                connection.commit()
+                connection.close()    
+                return redirect('log')
+    else:
+        form = Change_passForm()
+    return render(request, 'change_pass.html',{'form': form})
+
+def error_change_pass(request):
+    random_number=request.session.get('random_number') # set 'token' in the session
+    if request.method == 'POST':
+        form = Change_passForm(request.POST)
+        if form.is_valid():
+            email=request.session['email'] # set 'token' in the session
+            password=form.cleaned_data['password']
+            code=form.cleaned_data['code']
+            code = int(code)
+            if code != random_number:
+                return redirect ('error_change_pass')
+            else:
+                cursor = connection.cursor()
+                coded_password=make_password(password)
+                if User.objects.filter(email=email).exists(): 
+                    cursor.execute("UPDATE jobsite_user SET password = %s WHERE email = %s", [coded_password, email])
+                elif Company.objects.filter(email=email).exists():
+                    cursor.execute("UPDATE jobsite_company SET password = %s WHERE email = %s", [coded_password, email])
+                connection.commit()
+                connection.close()    
+                return redirect('log')
+    else:
+        form = Change_passForm()
+    return render(request, 'change_pass.html',{'form': form})
+
+
+def edit_human_profile(request):
+    email=request.session['email'] # set 'token' in the session
+    user_data = User.objects.filter(email=email).first()
     if request.method == 'POST':
         form = HumanForm(request.POST)
         if form.is_valid():
-            email=request.session['email'] # set 'token' in the session
             full_name = form.cleaned_data.get("full_name")
+            if full_name is None:
+                full_name='unspecified'
             phone_number = form.cleaned_data.get("phone_number")
-            education = form.cleaned_data.get("phone_number")
+            if phone_number is None:
+                phone_number='unspecified'
+            education = form.cleaned_data.get("education")
+            if education is None:
+                education='unspecified'
             experience = form.cleaned_data.get("experience")
+            if experience is None:
+                experience='unspecified'            
             skills = form.cleaned_data.get("skills")
+            if skills is None:
+                skills='unspecified'
             hobbies = form.cleaned_data.get("hobbies")
+            if hobbies is None:
+                hobbies='unspecified'
             foreign_languages = form.cleaned_data.get("foreign_languages")
+            if foreign_languages is None:
+                foreign_languages='unspecified'
+
             # create a new user object and save it to the database
-            user = User(email=email, full_name=full_name,phone_number=phone_number,education=education,experience=experience,skills=skills,hobbies=hobbies,foreign_languages=foreign_languages )
-            user.save()
+            cursor = connection.cursor()
+            cursor.execute("UPDATE jobsite_user SET full_name = %s, phone_number = %s, education = %s, experience = %s, skills = %s, hobbies = %s, foreign_languages = %s WHERE email = %s", [full_name, phone_number, education, experience, skills, hobbies, foreign_languages, email])
+            connection.commit()
+            connection.close()
             
-            return redirect('success')
+            return redirect('main_page_human')
     else:
-        form = HumanForm()
-    return render(request, 'human_profile.html', {'form': form})
+        form = HumanForm(initial={'full_name':user_data.full_name,'phone_number':user_data.phone_number,'education':user_data.education,'experience':user_data.experience,'skills':user_data.skills,'hobbies':user_data.hobbies,'foreign_languages':user_data.foreign_languages })
+    return render(request, 'edit_human_profile.html', {'form': form})
 
-def success(request):
+def edit_company_profile(request):
     email=request.session['email'] # set 'token' in the session
-    context = {
-        'name': email
-    }
-    return render(request, 'success.html',context=context)
+    user_data = Company.objects.filter(email=email).first()
+    if request.method == 'POST':
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            company_name = form.cleaned_data.get("company_name")
+            if company_name is None:
+                company_name='unspecified'
+            industry = form.cleaned_data.get("industry")
+            if industry is None:
+                industry='unspecified'
+            phone_number = form.cleaned_data.get("phone_number")
+            if phone_number is None:
+                phone_number='unspecified'
+            description = form.cleaned_data.get("description")
+            if description is None:
+                description='unspecified'            
+            # create a new user object and save it to the database
+            cursor = connection.cursor()
+            cursor.execute("UPDATE jobsite_company SET company_name = %s, industry = %s, phone_number = %s, description = %s WHERE email = %s", [company_name,industry, phone_number, description, email])
+            connection.commit()
+            connection.close()
+            
+            return redirect('main_page_company')
+    else:
+        form = CompanyForm(initial={'company_name':user_data.company_name,'industry':user_data.industry,'phone_number':user_data.phone_number,'description':user_data.description})
+    return render(request, 'edit_company_profile.html', {'form': form})
 
-def main_page(request):
-    return render(request, 'main_page.html')
+
+def main_page_human(request):
+    email=request.session['email']
+    if request.method == 'POST':
+        form = SearchBarForm(request.POST)
+        if form.is_valid():
+            searchBar = form.cleaned_data.get("searchBar")
+            job_location = form.cleaned_data.get("job_location")
+            department = form.cleaned_data.get("department")
+            job_type = form.cleaned_data.get("job_type")
+            study_level = form.cleaned_data.get("study_level")
+            career_level = form.cleaned_data.get("career_level")
+            industry = form.cleaned_data.get("industry")
+            request.session['searchBar'] = searchBar # set 'token' in the session     
+            request.session['job_location'] = job_location # set 'token' in the session     
+            request.session['department'] = department # set 'token' in the session     
+            request.session['job_type'] = job_type # set 'token' in the session     
+            request.session['study_level'] = study_level # set 'token' in the session     
+            request.session['career_level'] = career_level # set 'token' in the session     
+            request.session['industry'] = industry # set 'token' in the session     
+            return redirect('show_filtered_ads')
+    else:
+        form = SearchBarForm()
+    return render(request, 'main_page_human.html',{'form':form})
+
+def main_page_company(request):
+    email=request.session['email']
+    if request.method == 'POST':
+        form = SearchBarForm(request.POST)
+        if form.is_valid():
+            searchBar = form.cleaned_data.get("searchBar")
+            job_location = form.cleaned_data.get("job_location")
+            department = form.cleaned_data.get("department")
+            job_type = form.cleaned_data.get("job_type")
+            study_level = form.cleaned_data.get("study_level")
+            career_level = form.cleaned_data.get("career_level")
+            industry = form.cleaned_data.get("industry")
+            request.session['searchBar'] = searchBar # set 'token' in the session     
+            request.session['job_location'] = job_location # set 'token' in the session     
+            request.session['department'] = department # set 'token' in the session     
+            request.session['job_type'] = job_type # set 'token' in the session     
+            request.session['study_level'] = study_level # set 'token' in the session     
+            request.session['career_level'] = career_level # set 'token' in the session     
+            request.session['industry'] = industry # set 'token' in the session     
+            return redirect('show_filtered_ads')
+    else:
+        form = SearchBarForm()
+    return render(request, 'main_page_company.html',{'form':form})
+
+def new_ad(request):
+    email=request.session['email']
+    user_data = Company.objects.filter(email=email).first()
+    if request.method == 'POST':
+        form = AdForm(request.POST)
+        if form.is_valid():
+            if user_data.company_name=='unspecified':
+                name='unspecified'
+            else:
+                name=user_data.company_name
+            current_date=date.today()
+            phone_number = form.cleaned_data.get("phone_number")
+            job_title = form.cleaned_data.get("job_title")
+            job_description = form.cleaned_data.get("job_description")
+            job_location = form.cleaned_data.get("job_location")
+            salary = form.cleaned_data.get("salary")
+            ad = Ad(company_id=user_data.id, company_name=name, industry=user_data.industry, phone_number=phone_number, job_title=job_title, job_description=job_description,job_location=job_location, salary=salary,posted_date=current_date)
+            ad.save()
+            return redirect('main_page_company')
+    else:
+        form = AdForm()
+    return render(request, 'new_ad.html',{'form':form})
+
+def show_filtered_ads(request):
+    searchBar=request.session['searchBar']
+    job_location=request.session['job_location'] # set 'token' in the session     
+    department=request.session['department'] # set 'token' in the session     
+    job_type=request.session['job_type'] # set 'token' in the session     
+    study_level=request.session['study_level'] # set 'token' in the session     
+    career_level=request.session['career_level'] # set 'token' in the session     
+    industry=request.session['industry'] # set 'token' in the session     
+    mydata = Ad.objects.filter(Q(company_name__icontains=searchBar) | Q(job_title__icontains=searchBar) | Q(job_description__icontains=searchBar))
+    if job_location!='Unspecified':
+        mydata=mydata.filter(job_location__exact=job_location)
+    if department!='Unspecified':
+        mydata=mydata.filter(department__exact=department)
+    if job_type!='Unspecified':
+        mydata=mydata.filter(job_type__exact=job_type)
+    if study_level!='Unspecified':
+        mydata=mydata.filter(study_level__exact=study_level)
+    if career_level!='Unspecified':
+        mydata=mydata.filter(career_level__exact=career_level)
+    if industry!='Unspecified':
+        mydata=mydata.filter(industry__exact=industry)
+    context={'mymembers': mydata
+
+    }
+    return render(request, 'show_filtered_ads.html', context=context)
+
+def company_profile(request,company_id):
+    mydata = Company.objects.filter(id=company_id)
+    context = {
+        'mymembers': mydata
+    }
+    return render(request, 'company_profile.html',context=context)
+
+        
+def own_company_profile(request):
+    email=request.session['email']
+    mydata=Company.objects.filter(email=email)
+    context = {
+        'mymembers': mydata
+    }
+    return render(request, 'own_company_profile.html',context=context)
+
+def own_human_profile(request):
+    email=request.session['email']
+    mydata=User.objects.filter(email=email)
+    used_id=mydata[0].id
+    applications = Application.objects.filter(user_id=used_id)
+    applies = applications.values_list('ad_id', flat=True)
+    ads = Ad.objects.filter(id__in=applies)
+    context = {
+        'mymembers': mydata,
+        'ads': ads
+    }
+    return render(request, 'own_human_profile.html',context=context)
+
+def ad_page(request,ad_id):
+    email=request.session['email']
+    if User.objects.filter(email=email).exists():
+        otherdata=User.objects.filter(email=email)
+    elif Company.objects.filter(email=email).exists():
+        otherdata=Company.objects.filter(email=email)
+    usertype=otherdata[0].type
+    used_id=otherdata[0].id
+    if Application.objects.filter(ad_id=ad_id, user_id=used_id).exists():
+        already_applied=True
+    else:
+        already_applied=False
+    mydata = Ad.objects.filter(id=ad_id)
+    application_list = Application.objects.filter(ad_id=ad_id)
+    applies = application_list.values_list('user_id', flat=True)
+    user_list = User.objects.filter(id__in=applies)
+    context = {
+        'mymembers': mydata,
+        'usertype':usertype,
+        'userid':used_id,
+        'applies':user_list,
+        'ad_id':ad_id,
+        'already_applied':already_applied
+    }
+    comp_id = mydata[0].company_id
+    newdata=Company.objects.filter(id=comp_id)
+    email1=newdata[0].email
+    if request.method == 'POST':
+        subject = 'welcome to GFG world'
+        message = f'hai ca merge {email}'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [email1, ]
+        send_mail( subject, message, email_from, recipient_list )
+        cursor = connection.cursor()
+        cursor.execute("INSERT INTO jobsite_application (ad_id, user_id) VALUES (%s, %s)", [ ad_id, otherdata[0].id, ])
+        connection.commit()
+        connection.close()
+    return render(request, 'ad_page.html',context=context)
+
+
 

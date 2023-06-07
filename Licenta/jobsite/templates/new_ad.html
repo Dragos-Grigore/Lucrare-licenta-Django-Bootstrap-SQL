@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Create Job Advertisement</h2>
+  <form method="POST">
+    {% csrf_token %}
+    <br><br>
+    {{ form.phone_number.label_tag }} {{ form.phone_number }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.phone_number }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_title.label_tag }} {{ form.job_title }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.job_title }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_description.label_tag }} {{ form.job_description }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.job_description }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_location.label_tag }} {{ form.job_location }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.job_location }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.department.label_tag }} {{ form.department }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.department }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_type.label_tag }} {{ form.job_type }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.job_type }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.study_level.label_tag }} {{ form.study_level }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.study_level }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.career_level.label_tag }} {{ form.career_level }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.career_level }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.salary.label_tag }} {{ form.salary }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.salary }}</div>
+    {% endif %}
+    <br><br>
+    <button type="submit">Create</button>
+  </form>
+  <a href="{% url 'edit_company_profile' %}">Custom profile</a>
+  <li><a href="/">Log out</a></li>
+  <a href="{% url 'new_ad' %}">Create announcement</a>
+{% endblock %}

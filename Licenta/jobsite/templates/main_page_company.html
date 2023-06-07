@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Success!</h2>
+  <p>You logged in.</p>
+{% if name %}
+<h1>Hello {{ name }}</h1>
+{% else %}
+<h1>Hello World</h1>
+{% endif %}
+<form method="POST">
+{% csrf_token %}
+    {{ form.searchBar.label_tag }} {{ form.searchBar }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.searchBar }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_location.label_tag }} {{ form.job_location }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.searchBar }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.department.label_tag }} {{ form.department }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.department }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.job_type.label_tag }} {{ form.job_type }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.job_type }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.study_level.label_tag }} {{ form.study_level }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.study_level }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.career_level.label_tag }} {{ form.career_level }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.career_level }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.industry.label_tag }} {{ form.industry }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.industry }}</div>
+    {% endif %}
+    <br><br>
+    <button type="submit">Search</button>
+  </form> 
+<a href="{% url 'edit_company_profile' %}">Custom profile</a>
+<li><a href="/">Log out</a></li>
+<a href="{% url 'new_ad' %}">Create announcement</a>
+<a href="{% url 'own_company_profile' %}">Own profile</a>
+
+
+
+
+{% endblock %}

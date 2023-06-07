@@ -43,7 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'jobsite',
     'captcha',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
 ]
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -123,8 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -142,4 +148,33 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'ownerlicenta@gmail.com'
 EMAIL_HOST_PASSWORD = 'aehewcyawkpgelga'
 
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_URL='/images/'
+
+MEDIA_ROOT =os.path.join(BASE_DIR, 'static/images')
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'social_core.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+]
+
+SOCIAL_AUTH_GOOGLE_OATH2_KEY='44538023299-s1gn3unk7kb8rs4q4169214fe3liljg9.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OATH2_SECRET='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'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ['email', 'profile']
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_PARAMETERS = {'prompt': 'select_account'}
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}

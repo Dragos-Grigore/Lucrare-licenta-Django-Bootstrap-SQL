@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2></h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.company_name.label_tag }} {{ form.company_name }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.company_name }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.industry.label_tag }} {{ form.industry }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.industry }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.phone_number.label_tag }} {{ form.phone_number }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.phone_number }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.description.label_tag }} {{ form.description }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.description }}</div>
+    {% endif %}
+    <br><br>
+    <button type="submit">Finish</button>
+  </form>
+  <li><a href="/">Log out</a></li>
+
+{% endblock %}

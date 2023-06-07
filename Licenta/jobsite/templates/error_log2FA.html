@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Sign up</h2>
+  <p>Wrong code<p>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.code.label_tag }} {{ form.code }}
+    {% if form.errors.code %}
+    <div class="error-message">{{ form.errors.code }}</div>
+{% endif %}
+<p>Wrong code<p>
+    <br><br>
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}
+

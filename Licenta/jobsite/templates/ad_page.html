@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>The queryset object:</p>
+
+  {{ mymembers }}
+  
+  <p>Loop through the items:</p>
+  
+  <table border='1'>
+    <tr>
+      <th>name</th>
+      <th>industry</th>
+      <th>phone</th>
+      <th>title</th>
+    </tr>
+    {% for x in mymembers %}
+      <tr>
+        <td>{{ x.company_name }}</td>
+        <td>{{ x.industry }}</td>
+        <td>{{ x.phone_number }}</td>
+        <td>{{ x.job_title}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% if usertype == 'human' and already_applied == False %}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Submit</button>
+    {% elif already_applied == True %}
+    <button type="button" disabled>Already applied</button>
+{%endif%}
+{%if usertype == 'company' and comp_id == x.company_id%}
+<table border='1'>
+  <tr>
+    <th>name</th>
+  </tr>
+  {% for x in applies %}
+    <tr>
+      <td>{{ x.email }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{%endif%}
+</form>
+  {% endblock %}

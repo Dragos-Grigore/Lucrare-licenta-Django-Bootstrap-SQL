@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('jobsite.urls')),
     path('captcha/', include('captcha.urls')),
-    path("jobsite/", include("django.contrib.auth.urls")),  # new
+    path("jobsite/", include("django.contrib.auth.urls")),
 
 
 ]
+

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2></h2>
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.full_name.label_tag }} {{ form.full_name }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.full_name }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.phone_number.label_tag }} {{ form.phone_number }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.phone_number }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.education.label_tag }} {{ form.education }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.education }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.experience.label_tag }} {{ form.experience }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.experience }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.skills.label_tag }} {{ form.skills }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.skills }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.hobbies.label_tag }} {{ form.hobbies }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.hobbies }}</div>
+    {% endif %}
+    <br><br>
+    {{ form.foreign_languages.label_tag }} {{ form.foreign_languages }}
+    {% if form.errors %}
+        <div class="error-message">{{ form.errors.foreign_languages }}</div>
+    {% endif %}
+    <br><br>
+    <button type="submit">Finish</button>
+  </form>
+  <li><a href="/">Log out</a></li>
+{% endblock %}
+
