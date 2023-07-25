@@ -1,47 +1,165 @@
-{% extends 'base.html' %}
 
-{% block content %}
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<p>The queryset object:</p>
-
-  {{ mymembers }}
+      {% load bootstrap5 %}
+      {% bootstrap_css %}
+      {% bootstrap_javascript %}
+      <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: Arial, sans-serif;
+      }
+      
+      .container {
+          margin-top: 20px;
+      }
+      
+      .nav {
+          padding: 10px;
+          background-color: #b3d9ff;
+          border-radius: 5px;
+          display: flex;
+          justify-content: flex-end;
+      }
+      
+      .nav-item {
+          list-style-type: none;
+          margin-right: 10px;
+      }
+      
+      .nav-item a {
+          color: #262626;
+          text-decoration: none;
+          font-weight: bold;
+      }
+          h1 {
+              margin-top: 40px;
+              text-align: center;
+              color: #17a2b8;
+          }
+            .container {
+              margin-top: 20px;
+            }
+          
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+          
+            .data-container {
+              background-color: #e6e6e6;
+              padding: 20px;
+              border-radius: 5px;
+              margin-bottom: 20px;
+            }
+            
+            .empty-container {
+              background-color:  #e6e6e6;
+              padding: 10px;
+              border-radius: 5px;
+            }
+            .custom-button {
+              background-color: #004d99;
+              color: white;
+            }
+          </style>
+  </head>
+  <body>
   
-  <p>Loop through the items:</p>
-  
-  <table border='1'>
-    <tr>
-      <th>name</th>
-      <th>industry</th>
-      <th>phone</th>
-      <th>title</th>
-    </tr>
-    {% for x in mymembers %}
-      <tr>
-        <td>{{ x.company_name }}</td>
-        <td>{{ x.industry }}</td>
-        <td>{{ x.phone_number }}</td>
-        <td>{{ x.job_title}}</td>
-      </tr>
-    {% endfor %}
-  </table>
-  {% if usertype == 'human' and already_applied == False %}
+    <div class="container">
+    <ul class="nav">
+      <li class="nav-item">
+        <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+ 
+
+  <div class="container">  
+    <div class="data-container">
+      <table class="table">
+          {% for x in mymembers %}
+          <tr><li class="nav-item">
+            {{ x.company_name }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x. }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.department }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.job_type }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.study_level }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.career_level }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.phone_number}}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.job_title }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.job_description }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.job_location }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.salary}}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.posted_date }}    </li>
+          </td>
+          </tr>
+        {% endfor %}
+      </table>
+      </div>
+    </div>
+    <div class="container">  
+      <div class="data-container">
+        <p>{{ applicationlist|length}} appliations found</p>
+    
+    {% if applicationlist %}
+        <table class="table">
+            {% for x in applicationlist %}
+            <tr><li class="nav-item">
+              {{ x.full_name }}    </li>
+            </td>
+            </tr>
+          {% endfor %}
+        </table>
+        {% else %}
+      <div class="empty-container">
+        <p>No applications found.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% if usertype == 'human' and already_applied == False %}
   <form method="post">
     {% csrf_token %}
-    <button type="submit">Submit</button>
+    <button type="submit" name="human_submit" class="btn custom-button">Submit</button>
     {% elif already_applied == True %}
-    <button type="button" disabled>Already applied</button>
-{%endif%}
-{%if usertype == 'company' and comp_id == x.company_id%}
-<table border='1'>
-  <tr>
-    <th>name</th>
-  </tr>
-  {% for x in applies %}
-    <tr>
-      <td>{{ x.email }}</td>
-    </tr>
-  {% endfor %}
-</table>
-{%endif%}
+    <button type="button" name="human_unapply" class="btn custom-button">Unapply</button>
+{% elif usertype == 'admin' %}
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" name="admin_delete" class="btn custom-button">Delete ad</button>
 </form>
-  {% endblock %}
+{% elif usertype=='company' and userid==mymembers.0.company_id%}
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" name="company_delete" class="btn custom-button">Delete ad</button>
+</form>
+  </body>
+  </html>
+  

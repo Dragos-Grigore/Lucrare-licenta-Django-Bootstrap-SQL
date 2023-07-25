@@ -1,30 +1,135 @@
-{% extends 'base.html' %}
 
-{% block content %}
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<p>The queryset object:</p>
-
-  {{ mymembers }}
+      {% load bootstrap5 %}
+      {% bootstrap_css %}
+      {% bootstrap_javascript %}
+      <style>
+        body {
+          background-color: #f8f9fa;
+          font-family: Arial, sans-serif;
+      }
+      
+      .container {
+          margin-top: 20px;
+      }
+      
+      .nav {
+          padding: 10px;
+          background-color: #b3d9ff;
+          border-radius: 5px;
+          display: flex;
+          justify-content: flex-end;
+      }
+      
+      .nav-item {
+          list-style-type: none;
+          margin-right: 10px;
+      }
+      
+      .nav-item a {
+          color: #262626;
+          text-decoration: none;
+          font-weight: bold;
+      }
+          h1 {
+              margin-top: 40px;
+              text-align: center;
+              color: #17a2b8;
+          }
+            .container {
+              margin-top: 20px;
+            }
+          
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+          
+            .data-container {
+              background-color: #e6e6e6;
+              padding: 20px;
+              border-radius: 5px;
+              margin-bottom: 20px;
+            }
+            
+            .empty-container {
+              background-color:  #e6e6e6;
+              padding: 10px;
+              border-radius: 5px;
+            }
+            .custom-button {
+              background-color: #004d99;
+              color: white;
+            }
+          </style>
+  </head>
+  <body>
   
-  <p>Loop through the items:</p>
+    <div class="container">
+    <ul class="nav">
+      <li class="nav-item">
+        <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+ 
+<div class="container">  
+  <div class="data-container">
+    <p>{{ mymembers.0.company_name}} profile</p>
+    <table class="table">
+        {% for x in mymembers %}
+        <tr><li class="nav-item">
+          {{ x.company_name }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.industry }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.department }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.job_type }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.study_level }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.career_level }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.phone_number}}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.job_title }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.job_description }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.job_location }}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.salary}}    </li>
+        </td>
+        <td>      <li class="nav-item">
+          {{ x.posted_date }}    </li>
+        </td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+  </div>
+  {% if usertype == 'admin'%}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" name="admin_delete"  class="btn custom-button">Delete account</button>
+</form>
+{% endif %}
+  </body>
+  </html>
   
-  <table border='1'>
-    <tr>
-      <th>email</th>
-      <th>name</th>
-      <th>industry</th>
-      <th>phone</th>
-      <th>desc</th>
-    </tr>
-    {% for x in mymembers %}
-      <tr>
-        <td>{{ x.email }}</td>
-        <td>{{ x.company_name }}</td>
-        <td>{{ x.industry }}</td>
-        <td>{{ x.phone_number }}</td>
-        <td>{{ x.description }}</td>
-      </tr>
-    {% endfor %}
-  </table>
-
-  {% endblock %}

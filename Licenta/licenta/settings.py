@@ -44,10 +44,8 @@ INSTALLED_APPS = [
     'jobsite',
     'captcha',
     'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    'bootstrap5',
+
 
 ]
 SITE_ID = 1
@@ -149,18 +147,15 @@ EMAIL_HOST_USER = 'ownerlicenta@gmail.com'
 EMAIL_HOST_PASSWORD = 'aehewcyawkpgelga'
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'jobsite/static')]
 
 MEDIA_URL='/images/'
 
-MEDIA_ROOT =os.path.join(BASE_DIR, 'static/images')
+MEDIA_ROOT =[os.path.join(BASE_DIR, 'jobsite/static/jobsite/images')]
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-
 ]
 
 SOCIAL_AUTH_GOOGLE_OATH2_KEY='44538023299-s1gn3unk7kb8rs4q4169214fe3liljg9.apps.googleusercontent.com'

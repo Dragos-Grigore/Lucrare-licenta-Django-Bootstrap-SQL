@@ -1,50 +1,140 @@
-{% extends 'base.html' %}
 
-{% block content %}
-  <h2></h2>
-  <form method="POST">
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+      {% load bootstrap5 %}
+      {% bootstrap_css %}
+      {% bootstrap_javascript %}
+      <style>
+        @media (max-width: 576px) {
+          .data-container {
+              padding: 10px;
+          }
+      }
+      
+      @media (max-width: 768px) {
+          .nav {
+              justify-content: center;
+          }
+          
+          .nav-item {
+              margin-right: 0;
+              margin-bottom: 10px;
+          }
+      }
+        body {
+          background-color: #f8f9fa;
+          font-family: Arial, sans-serif;
+      }
+      
+      .container {
+          margin-top: 20px;
+      }
+      
+      .nav {
+          padding: 10px;
+          background-color: #b3d9ff;
+          border-radius: 5px;
+          display: flex;
+          justify-content: flex-end;
+      }
+      
+      .nav-item {
+          list-style-type: none;
+          margin-right: 10px;
+      }
+      
+      .nav-item a {
+          color: #262626;
+          text-decoration: none;
+          font-weight: bold;
+      }
+          h1 {
+              margin-top: 40px;
+              text-align: center;
+              color: #17a2b8;
+          }
+            .container {
+              margin-top: 20px;
+            }
+          
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+          
+            .data-container {
+              background-color: #e6e6e6;
+              padding: 20px;
+              border-radius: 5px;
+              margin-bottom: 20px;
+            }
+            
+            .empty-container {
+              background-color:  #e6e6e6;
+              padding: 10px;
+              border-radius: 5px;
+            }
+            .custom-button {
+              background-color: #004d99;
+              color: white;
+            }
+          </style>
+  </head>
+  <body>
+  
+    <div class="container">
+    <ul class="nav">
+      <li class="nav-item">
+        <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+ 
+<div class="container">  
+  <div class="data-container">
+    <p>{{ mymembers.0.full_name}} profile</p>
+    <table class="table">
+        {% for x in mymembers %}
+        <tr>
+          <td>      <li class="nav-item">
+            {{ x.email }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.full_name }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.phone_number }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.education }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.experience }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.skills }}</td>
+          <td>      <li class="nav-item">
+            {{ x.hobbies }}    </li>
+          </td>
+          <td>      <li class="nav-item">
+            {{ x.foreign_languages }}    </li>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+  </div>
+  {% if usertype == 'admin'%}
+  <form method="post">
     {% csrf_token %}
-    {{ form.full_name.label_tag }} {{ form.full_name }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.full_name }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.phone_number.label_tag }} {{ form.phone_number }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.phone_number }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.education.label_tag }} {{ form.education }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.education }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.experience.label_tag }} {{ form.experience }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.experience }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.experience.label_tag }} {{ form.experience }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.experience }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.skills.label_tag }} {{ form.skills }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.skills }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.hobbies.label_tag }} {{ form.hobbies }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.hobbies }}</div>
-    {% endif %}
-    <br><br>
-    {{ form.foreign_languages.label_tag }} {{ form.foreign_languages }}
-    {% if form.errors %}
-        <div class="error-message">{{ form.errors.foreign_languages }}</div>
-    {% endif %}
-    <br><br>
-    <button type="submit">Finish</button>
-  </form>
-{% endblock %}
-
+    <button type="submit" name="admin_delete"  class="btn custom-button">Delete account</button>
+</form>
+{% endif %}
+  </body>
+  </html>
+  

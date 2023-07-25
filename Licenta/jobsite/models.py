@@ -11,6 +11,9 @@ class User(models.Model):
     skills=models.TextField(max_length=500, default='unspecified')
     hobbies=models.TextField(max_length=500, default='unspecified')
     foreign_languages=models.TextField(max_length=500, default='unspecified')
+    current_company= models.CharField(max_length=50,default='unspecified')
+    job_title= models.CharField(max_length=100, default='unspecified')
+
 
     def __str__(self):
         return self.email

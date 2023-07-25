@@ -9,7 +9,9 @@ CREATE TABLE jobsite_user (
     experience TEXT NULL,
     skills TEXT NULL,
     hobbies TEXT NULL,
-    foreign_languages TEXT NULL
+    foreign_languages TEXT NULL,
+    current_company VARCHAR(50) NULL,
+    job_title VARCHAR(100) NULL
 );
 
 CREATE TABLE jobsite_company (
@@ -50,6 +52,9 @@ CREATE TABLE jobsite_application(id INTEGER PRIMARY KEY AUTOINCREMENT,
     FOREIGN KEY (ad_id) REFERENCES jobsite_ad (id)
     FOREIGN KEY (user_id) REFERENCES jobsite_user (id));
 
+
+
+
 SELECT * FROM jobsite_user;
 
 DROP TABLE jobsite_user;
@@ -67,4 +72,8 @@ SELECT * FROM jobsite_application;
 DROP TABLE jobsite_application;
 
 INSERT INTO jobsite_user (full_name,email ,password,type)
-VALUES( 'admin','ownerlicenta@gmail.com','admin123','admin');
+VALUES( 'admin','ownerlicenta@gmail.com','Admin123','admin');
+
+UPDATE jobsite_user
+SET password = 'Admin1234'
+WHERE id = 1;

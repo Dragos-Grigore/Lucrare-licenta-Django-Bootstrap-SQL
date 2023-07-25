@@ -16,10 +16,13 @@ urlpatterns = [
     path('error_change_pass/', views.error_change_pass, name='error_change_pass'),
     path('new_ad/', views.new_ad, name='new_ad'),
     path('show_filtered_ads/', views.show_filtered_ads, name='show_filtered_ads'),
+    path('show_filtered_users/', views.show_filtered_users, name='show_filtered_users'),
     path('company_profile/<int:company_id>/', views.company_profile, name='company_profile'),
-    path('own_company_profile/', views.own_company_profile, name='own_company_profile'),
-    path('own_human_profile/', views.own_human_profile, name='own_human_profile'),
-    path('ad_page/<int:ad_id>/', views.ad_page, name='ad_page')
+    path('human_profile/<int:user_id>/', views.human_profile, name='human_profile'),
+    path('own_company_profile/<int:company_id>/', views.own_company_profile, name='own_company_profile'),
+    path('own_human_profile/<int:user_id>/', views.own_human_profile, name='own_human_profile'),
+    path('ad_page/<int:ad_id>/', views.ad_page, name='ad_page'),
+    path('show_filtered_ads_not_logged/', views.show_filtered_ads_not_logged, name='show_filtered_ads_not_logged')
 
 
 

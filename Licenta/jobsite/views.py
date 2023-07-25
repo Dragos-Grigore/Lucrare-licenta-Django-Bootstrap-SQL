@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from jobsite.forms import UserForm,LoginForm,HumanForm,CompanyForm,Forgot_passForm,Change_passForm,log2FAForm,AdForm,SearchBarForm
+from jobsite.forms import UserForm,LoginForm,HumanForm,CompanyForm,Forgot_passForm,Change_passForm,log2FAForm,AdForm,SearchBarForm,MiniSearchForm
 from .models import User,Company,Ad,Application
 from django.conf import settings
 from django.core.mail import send_mail
@@ -14,12 +14,32 @@ from django.db.models import Q
 
 
 def say_hello(request):
-    mydata = User.objects.all()
-    context = {
-        'mymembers': mydata,
-        'name': 'Johnule'
-    }
-    return render(request, 'hello.html', context=context)
+    email='None'
+    usertype='None'
+    request.session['usertype'] = usertype # set 'token' in the session
+    request.session['email'] = email # set 'token' in the session
+
+    if request.method == 'POST':
+        form = SearchBarForm(request.POST)
+        if form.is_valid():
+            searchBar = form.cleaned_data.get("searchBar")
+            job_location = form.cleaned_data.get("job_location")
+            department = form.cleaned_data.get("department")
+            job_type = form.cleaned_data.get("job_type")
+            study_level = form.cleaned_data.get("study_level")
+            career_level = form.cleaned_data.get("career_level")
+            industry = form.cleaned_data.get("industry")
+            request.session['searchBar'] = searchBar # set 'token' in the session     
+            request.session['job_location'] = job_location # set 'token' in the session     
+            request.session['department'] = department # set 'token' in the session     
+            request.session['job_type'] = job_type # set 'token' in the session     
+            request.session['study_level'] = study_level # set 'token' in the session     
+            request.session['career_level'] = career_level # set 'token' in the session     
+            request.session['industry'] = industry # set 'token' in the session     
+            return redirect('show_filtered_ads_not_logged')
+    else:
+        form = SearchBarForm()
+    return render(request, 'hello.html',{'form': form})
 
 
 
@@ -32,8 +52,8 @@ def sign_up(request):
             password = form.cleaned_data['password']
             user_type = form.cleaned_data['type']
             coded_password=make_password(password)
-            subject = 'welcome to GFG world'
-            message = f'Hi thank you for registering in geeksforgeeks.'
+            subject = 'Welcome to our new app'
+            message = f'Thank you for registering to our app.'
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [email, ]
             send_mail( subject, message, email_from, recipient_list )
@@ -67,6 +87,8 @@ def login_view(request):
             send_mail( subject, message, email_from, recipient_list )
             request.session['random_number'] = random_number
             request.session['email'] = email # set 'token' in the session
+
+
  # set 'token' in the session
             return redirect('log2FA')
     else:
@@ -176,7 +198,7 @@ def error_change_pass(request):
                 return redirect('log')
     else:
         form = Change_passForm()
-    return render(request, 'change_pass.html',{'form': form})
+    return render(request, 'error_change_pass.html',{'form': form})
 
 
 def edit_human_profile(request):
@@ -250,7 +272,12 @@ def edit_company_profile(request):
 
 def main_page_human(request):
     email=request.session['email']
-    if request.method == 'POST':
+    otherdata=User.objects.filter(email=email)
+    user_id=otherdata[0].id
+    if User.objects.filter(email=email).exists():
+        otherdata=User.objects.filter(email=email)
+        usertype=otherdata[0].type
+    if 'ad_search' in request.POST and request.method == 'POST':
         form = SearchBarForm(request.POST)
         if form.is_valid():
             searchBar = form.cleaned_data.get("searchBar")
@@ -270,11 +297,21 @@ def main_page_human(request):
             return redirect('show_filtered_ads')
     else:
         form = SearchBarForm()
-    return render(request, 'main_page_human.html',{'form':form})
+    if 'user_search' in request.POST and request.method == 'POST':
+        form = MiniSearchForm(request.POST)
+        if form.is_valid():
+            searchBar = form.cleaned_data.get("searchBar")
+            request.session['searchBar'] = searchBar # set 'token' in the session
+            return redirect('show_filtered_users')
+        else:
+            form = MiniSearchForm()   
+    return render(request, 'main_page_human.html',{'form':form,'usertype':usertype,'user_id':user_id})
 
 def main_page_company(request):
     email=request.session['email']
-    if request.method == 'POST':
+    otherdata=Company.objects.filter(email=email)
+    company_id=otherdata[0].id
+    if 'ad_search' in request.POST:
         form = SearchBarForm(request.POST)
         if form.is_valid():
             searchBar = form.cleaned_data.get("searchBar")
@@ -294,7 +331,15 @@ def main_page_company(request):
             return redirect('show_filtered_ads')
     else:
         form = SearchBarForm()
-    return render(request, 'main_page_company.html',{'form':form})
+    if 'user_search' in request.POST:
+        form = MiniSearchForm(request.POST)
+        if form.is_valid():
+            searchBar = form.cleaned_data.get("searchBar")
+            request.session['searchBar'] = searchBar # set 'token' in the session
+            return redirect('show_filtered_users')
+        else:
+            form = MiniSearchForm()        
+    return render(request, 'main_page_company.html',{'form':form,'company_id':company_id})
 
 def new_ad(request):
     email=request.session['email']
@@ -311,8 +356,12 @@ def new_ad(request):
             job_title = form.cleaned_data.get("job_title")
             job_description = form.cleaned_data.get("job_description")
             job_location = form.cleaned_data.get("job_location")
+            job_type = form.cleaned_data.get("job_type")
+            study_level = form.cleaned_data.get("study_level")
+            department = form.cleaned_data.get("department")
+            career_level = form.cleaned_data.get("career_level")
             salary = form.cleaned_data.get("salary")
-            ad = Ad(company_id=user_data.id, company_name=name, industry=user_data.industry, phone_number=phone_number, job_title=job_title, job_description=job_description,job_location=job_location, salary=salary,posted_date=current_date)
+            ad = Ad(company_id=user_data.id, company_name=name, industry=user_data.industry, phone_number=phone_number, job_title=job_title, job_description=job_description,job_location=job_location, salary=salary,posted_date=current_date,career_level=career_level,department=department,job_type=job_type,study_level=study_level)
             ad.save()
             return redirect('main_page_company')
     else:
@@ -320,6 +369,42 @@ def new_ad(request):
     return render(request, 'new_ad.html',{'form':form})
 
 def show_filtered_ads(request):
+    email=request.session['email']
+    own_id=0
+    try:
+        otherdata = Company.objects.filter(email=email)
+        if otherdata.exists():
+            own_id = otherdata[0].id
+        # Continue with the rest of your code
+    except Company.DoesNotExist:
+        own_id=0
+    searchBar=request.session['searchBar']
+    job_location=request.session['job_location'] # set 'token' in the session     
+    department=request.session['department'] # set 'token' in the session     
+    job_type=request.session['job_type'] # set 'token' in the session     
+    study_level=request.session['study_level'] # set 'token' in the session     
+    career_level=request.session['career_level'] # set 'token' in the session     
+    industry=request.session['industry'] # set 'token' in the session     
+    mydata = Ad.objects.filter(Q(company_name__icontains=searchBar) | Q(job_title__icontains=searchBar) | Q(job_description__icontains=searchBar))
+    if job_location!='Unspecified':
+        mydata=mydata.filter(job_location__exact=job_location)
+    if department!='Unspecified':
+        mydata=mydata.filter(department__exact=department)
+    if job_type!='Unspecified':
+        mydata=mydata.filter(job_type__exact=job_type)
+    if study_level!='Unspecified':
+        mydata=mydata.filter(study_level__exact=study_level)
+    if career_level!='Unspecified':
+        mydata=mydata.filter(career_level__exact=career_level)
+    if industry!='Unspecified':
+        mydata=mydata.filter(industry__exact=industry)
+    context={'mymembers': mydata,
+             'own_id':own_id
+
+    }
+    return render(request, 'show_filtered_ads.html', context=context)
+
+def show_filtered_ads_not_logged(request):
     searchBar=request.session['searchBar']
     job_location=request.session['job_location'] # set 'token' in the session     
     department=request.session['department'] # set 'token' in the session     
@@ -343,25 +428,74 @@ def show_filtered_ads(request):
     context={'mymembers': mydata
 
     }
-    return render(request, 'show_filtered_ads.html', context=context)
+    return render(request, 'show_filtered_ads_not_logged.html', context=context)
+
+def show_filtered_users(request):
+    searchBar=request.session['searchBar']
+    email=request.session['email']
+    if User.objects.filter(email=email).exists():
+        otherdata=User.objects.filter(email=email)
+        own_id=otherdata[0].id
+    elif Company.objects.filter(email=email).exists():
+        otherdata=Company.objects.filter(email=email)
+        own_id=otherdata[0].id
+    mydata = User.objects.filter(Q(full_name__icontains=searchBar)).exclude(
+    Q(full_name__icontains="admin") |
+    Q(full_name__icontains="Admin")
+)   
+    mydata2 = Company.objects.filter(Q(company_name__icontains=searchBar))
+    context={'myusers': mydata,
+             'mycompanies': mydata2,
+             'own_id':own_id
+    }
+    return render(request, 'show_filtered_users.html', context=context)
 
 def company_profile(request,company_id):
+    email=request.session['email']
+    if User.objects.filter(email=email).exists():
+        otherdata=User.objects.filter(email=email)
+        usertype=otherdata[0].type
     mydata = Company.objects.filter(id=company_id)
     context = {
-        'mymembers': mydata
+        'mymembers': mydata,
+        'usertype':usertype
     }
+    if 'admin_delete' in request.POST:
+        Company_delete(company_id)
+        return redirect('main_page_human')
     return render(request, 'company_profile.html',context=context)
 
+def human_profile(request,user_id):
+    email=request.session['email']
+    if User.objects.filter(email=email).exists():
+        otherdata=User.objects.filter(email=email)
+        usertype=otherdata[0].type
+    else: 
+        otherdata=Company.objects.filter(email=email)
+        usertype=otherdata[0].type
+    mydata = User.objects.filter(id=user_id)
+    context = {
+        'mymembers': mydata,
+        'usertype':usertype
         
-def own_company_profile(request):
+    }
+    if 'admin_delete' in request.POST:
+        Human_delete(user_id)
+        return redirect('main_page_human')
+
+    return render(request, 'human_profile.html',context=context)
+        
+def own_company_profile(request,company_id):
     email=request.session['email']
     mydata=Company.objects.filter(email=email)
+    ads=Ad.objects.filter(company_id=mydata[0].id)
     context = {
-        'mymembers': mydata
+        'mymembers': mydata,
+        'ads':ads
     }
     return render(request, 'own_company_profile.html',context=context)
 
-def own_human_profile(request):
+def own_human_profile(request,user_id):
     email=request.session['email']
     mydata=User.objects.filter(email=email)
     used_id=mydata[0].id
@@ -375,33 +509,43 @@ def own_human_profile(request):
     return render(request, 'own_human_profile.html',context=context)
 
 def ad_page(request,ad_id):
+    mydata = Ad.objects.filter(id=ad_id)
     email=request.session['email']
-    if User.objects.filter(email=email).exists():
+    used_id=0
+    user_list='None'
+    already_applied='False'
+    otherdata='None'
+    if email=='None':
+        usertype='None'
+    elif User.objects.filter(email=email).exists():
         otherdata=User.objects.filter(email=email)
     elif Company.objects.filter(email=email).exists():
         otherdata=Company.objects.filter(email=email)
-    usertype=otherdata[0].type
-    used_id=otherdata[0].id
-    if Application.objects.filter(ad_id=ad_id, user_id=used_id).exists():
-        already_applied=True
-    else:
-        already_applied=False
-    mydata = Ad.objects.filter(id=ad_id)
-    application_list = Application.objects.filter(ad_id=ad_id)
-    applies = application_list.values_list('user_id', flat=True)
-    user_list = User.objects.filter(id__in=applies)
+    if otherdata!='None':
+        usertype=otherdata[0].type
+        used_id=otherdata[0].id
+        if Application.objects.filter(ad_id=ad_id, user_id=used_id).exists():
+            already_applied=True
+        else:
+            already_applied=False
+        application_list = Application.objects.filter(ad_id=ad_id)
+        applies = application_list.values_list('user_id', flat=True)
+        user_list = User.objects.filter(id__in=applies)
+    if Application.objects.filter(ad_id=ad_id).exists():
+        applicationlist=User.objects.filter(ad_id=ad_id)
     context = {
         'mymembers': mydata,
         'usertype':usertype,
         'userid':used_id,
         'applies':user_list,
         'ad_id':ad_id,
-        'already_applied':already_applied
+        'already_applied':already_applied,
+        'applicationlist':applicationlist
     }
     comp_id = mydata[0].company_id
     newdata=Company.objects.filter(id=comp_id)
     email1=newdata[0].email
-    if request.method == 'POST':
+    if 'human_submit' in request.POST:
         subject = 'welcome to GFG world'
         message = f'hai ca merge {email}'
         email_from = settings.EMAIL_HOST_USER
@@ -411,7 +555,36 @@ def ad_page(request,ad_id):
         cursor.execute("INSERT INTO jobsite_application (ad_id, user_id) VALUES (%s, %s)", [ ad_id, otherdata[0].id, ])
         connection.commit()
         connection.close()
+        return redirect('ad_page')
+    elif 'human_unapply' in request.POST:
+        Application_delete(ad_id,otherdata[0].id)
+        return redirect('ad_page')
+    elif 'admin_submit' in request.POST:
+        Ad_delete(ad_id)
+        return redirect('main_page_human')
+    elif 'company_delete' in request.POST:
+        Application_delete(ad_id,otherdata[0].id)
+        return redirect('main_page_company')
     return render(request, 'ad_page.html',context=context)
+
+def Application_delete(ad_id,user_id):
+    del_apply=Application.objects.get(ad_id=ad_id,user_id=user_id)
+    del_apply.delete()
+
+def Ad_delete(ad_id):
+    del_ad = Ad.objects.get(id=ad_id)
+    del_ad.delete()
+
+
+def Human_delete(user_id):
+    del_user = User.objects.get(id=user_id)
+    del_user.delete()
+
+def Company_delete(user_id):
+    del_company = Company.objects.get(id=user_id)
+    del_company.delete()
+
+
 
 
 

@@ -1,30 +1,214 @@
-{% extends 'base.html' %}
 
-{% block content %}
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<p>The queryset object:</p>
-
-  {{ mymembers }}
+      {% load bootstrap5 %}
+      {% bootstrap_css %}
+      {% bootstrap_javascript %}
+      <style>
+        @media (max-width: 768px) {
+          .container {
+            margin-top: 10px;
+          }
+        
+          .nav {
+            justify-content: center;
+            padding: 5px;
+          }
+        
+          .nav-item {
+            margin-right: 5px;
+          }
+        
+          h2.title {
+            font-size: 20px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+          }
+        
+          .data-container {
+            padding: 15px;
+            margin-bottom: 10px;
+          }
+        
+          .empty-container {
+            padding: 5px;
+          }
+        
+          .btn {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+          }
+        }
+        
+        body {
+          background-color: #f8f9fa;
+          font-family: Arial, sans-serif;
+      }
+      
+      .container {
+          margin-top: 20px;
+      }
+      
+      .nav {
+          padding: 10px;
+          background-color: #b3d9ff;
+          border-radius: 5px;
+          display: flex;
+          justify-content: flex-end;
+      }
+      
+      .nav-item {
+          list-style-type: none;
+          margin-right: 10px;
+      }
+      
+      .nav-item a {
+          color: #262626;
+          text-decoration: none;
+          font-weight: bold;
+      }
+          h1 {
+              margin-top: 40px;
+              text-align: center;
+              color: #17a2b8;
+          }
+            .container {
+              margin-top: 20px;
+            }
+          
+            .title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 10px;
+            }
+          
+            .data-container {
+              background-color: #e6e6e6;
+              padding: 20px;
+              border-radius: 5px;
+              margin-bottom: 20px;
+            }
+            
+            .empty-container {
+              background-color:  #e6e6e6;
+              padding: 10px;
+              border-radius: 5px;
+            }
+            .custom-button {
+              background-color: #004d99;
+              color: white;
+            }
+          </style>
+  </head>
+  <body>
   
-  <p>Loop through the items:</p>
+    <div class="container">
+    <ul class="nav">
+      <li class="nav-item">
+        <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+ 
+<div class="container">  
+  <div class="data-container">
+    <p>Your profile</p>
+      <table class="table">
+        {% for x in mymembers %}
+        <tr>
+          <tr>
+            <td>      <li class="nav-item">
+              {{ x.email }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.company_name }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.industry }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.phone_number }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.description }}    </li>
+            </td>
+          </tr>
+        </tr>
+      {% endfor %}
+    </table>
+    </div>
+  </div>
   
-  <table border='1'>
-    <tr>
-      <th>email</th>
-      <th>name</th>
-      <th>industry</th>
-      <th>phone</th>
-      <th>desc</th>
-    </tr>
-    {% for x in mymembers %}
-      <tr>
-        <td>{{ x.email }}</td>
-        <td>{{ x.company_name }}</td>
-        <td>{{ x.industry }}</td>
-        <td>{{ x.phone_number }}</td>
-        <td>{{ x.description }}</td>
-      </tr>
-    {% endfor %}
-  </table>
+  
+  <div class="container">  
+    <div class="data-container">
+      <p>Your ads</p>
+      
+      {% if ads %}
+        <table class="table">
+          {% for x in ads %}
+          <tr>
+            <td>      <li class="nav-item">
+              {{ x.company_name }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.industry }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.department }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.job_type }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.study_level }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.career_level }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.phone_number}}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.job_title }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.job_description }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.job_location }}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.salary}}    </li>
+            </td>
+            <td>      <li class="nav-item">
+              {{ x.posted_date }}    </li>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+        {% else %}
+          <div class="empty-container">
+            <p>No ads made</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <a href="{% url 'edit_company_profile' %}" class="btn custom-button">Custom profile</a>
+  </div>
+  
+  <div class="container">
+    <a href="{% url 'new_ad' %}" class="btn custom-button">Create announcement</a>
+  </div>
+  
 
-  {% endblock %}
+
+  </body>
+  </html>
+  
