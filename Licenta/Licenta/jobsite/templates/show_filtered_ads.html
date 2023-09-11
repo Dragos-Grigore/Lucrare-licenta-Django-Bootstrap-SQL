@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <style>
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 10px;
+      }
+    
+      .nav {
+        justify-content: center;
+        padding: 5px;
+      }
+    
+      .nav-item {
+        margin-right: 5px;
+      }
+    
+      h2.title {
+        font-size: 20px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+    
+      .data-container {
+        padding: 15px;
+        margin-bottom: 10px;
+      }
+    
+      .empty-container {
+        padding: 5px;
+      }
+    }
+    
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      margin-top: 20px;
+    }
+    
+    .nav {
+      padding: 10px;
+      background-color: #b3d9ff;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .nav-item {
+      list-style-type: none;
+      margin-right: 10px;
+    }
+    
+    .nav-item a {
+      color: #262626;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    h1 {
+      margin-top: 40px;
+      text-align: center;
+      color: #17a2b8;
+    }
+    
+    .container {
+      margin-top: 20px;
+    }
+    
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .data-container {
+      background-color: #e6e6e6;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    
+    .empty-container {
+      background-color:  #e6e6e6;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <ul class="nav">
+    <li class="nav-item navbar-title">
+      JobFinder
+    </li>
+    <li class="nav-item">
+      <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+
+<div class="container">
+  <h2 class="title">Ads Listings</h2>
+  
+  <div class="data-container">
+    <p>{{ mymembers|length}} ads found</p>
+    
+    {% if mymembers %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>Industry</th>
+            <th>Job Title</th>
+            <th>Job Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in mymembers %}
+          <tr>
+            {% if x.company_id == own_id %}
+            <td>    <li class="nav-item">
+              <a href="{% url 'own_company_profile' company_id=x.company_id %}">{{ x.company_name }}</a>  </li>
+            </td>
+            {% else %}
+            <td>    <li class="nav-item">
+              <a href="{% url 'company_profile' company_id=x.company_id%}">{{ x.company_name }}</a>  </li>
+            </td>
+              {% endif %}
+            <td>    <li class="nav-item">
+              {{ x.industry }}  </li>
+            </td>
+            <td>    <li class="nav-item">
+              <a href="{% url 'ad_page' ad_id=x.id%}">{{ x.job_title }}</a>  </li>
+            </td>
+            <td>    <li class="nav-item">
+              {{x.job_location}}  </li>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-container">
+        <p>No announcements available.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+</body>
+</html>

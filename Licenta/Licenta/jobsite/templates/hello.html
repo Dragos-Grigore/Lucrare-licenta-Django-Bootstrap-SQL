@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .nav {
+            padding: 10px;
+            background-color: #b3d9ff;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-item {
+            list-style-type: none;
+            margin-right: 10px;
+        }
+
+        .nav-item a {
+            color: #262626;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin-top: 40px;
+            text-align: center;
+            color: #17a2b8;
+        }
+
+        .form-bg {
+            background-color: #b3d9ff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .heading-color {
+            color: #004d99;
+        }
+
+        .custom-button {
+            background-color: #004d99;
+            color: white;
+        }
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <ul class="nav">
+        <li class="nav-item navbar-title">
+            JobFinder
+        </li>
+        <li class="nav-item">
+            <a> </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'sign_up' %}">Sign up</a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'log' %}">Login</a>
+        </li>
+    </ul>
+</div>
+
+<div class="container">
+    <h1 class="text-center mt-4 heading-color">Welcome to Your Job Search Partner</h1>
+    <form method="POST" class="form-bg">
+        {% csrf_token %}
+        <p class="text-center">Discover New Job Opportunities</p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.searchBar.label_tag }}
+                    {{ form.searchBar }}
+                    {% if form.errors.searchBar %}
+                        <div class="text-danger">{{ form.errors.searchBar }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.job_location.label_tag }}
+                    {{ form.job_location }}
+                    {% if form.errors.job_location %}
+                        <div class="text-danger">{{ form.errors.job_location }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.department.label_tag }}
+                    {{ form.department }}
+                    {% if form.errors.department %}
+                        <div class="text-danger">{{ form.errors.department }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.job_type.label_tag }}
+                    {{ form.job_type }}
+                    {% if form.errors.job_type %}
+                        <div class="text-danger">{{ form.errors.job_type }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.study_level.label_tag }}
+                    {{ form.study_level }}
+                    {% if form.errors.study_level %}
+                        <div class="text-danger">{{ form.errors.study_level }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.career_level.label_tag }}
+                    {{ form.career_level }}
+                    {% if form.errors.career_level %}
+                        <div class="text-danger">{{ form.errors.career_level }}</div>
+                    {% endif %}
+                </div>
+                <div class="mb-3">
+                    {{ form.industry.label_tag }}
+                    {{ form.industry }}
+                    {% if form.errors.industry %}
+                        <div class="text-danger">{{ form.errors.industry }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn custom-button">Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

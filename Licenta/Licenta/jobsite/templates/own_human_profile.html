@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load bootstrap5 %}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      margin-top: 20px;
+    }
+
+    .nav {
+      padding: 10px;
+      background-color: #b3d9ff;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-item {
+      list-style-type: none;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .nav-item a {
+      color: #262626;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin-top: 40px;
+      text-align: center;
+      color: #17a2b8;
+    }
+
+    .container {
+      margin-top: 20px;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .data-container {
+      background-color: #e6e6e6;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    .empty-container {
+      background-color: #e6e6e6;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .custom-button {
+      background-color: #004d99;
+      color: white;
+    }
+
+    .data-item {
+      margin-bottom: 10px;
+    }
+
+    .data-item a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5px;
+      }
+
+      .nav-item {
+        margin-right: 0;
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <ul class="nav">
+    <li class="nav-item navbar-title">
+      JobFinder
+    </li>
+    <li class="nav-item">
+      <a href="/">Log out</a>
+    </li>
+  </ul>
+</div>
+
+<div class="container">  
+  <div class="data-container">
+    <h2 class="title">Your Profile</h2>
+    
+    <ul>
+    {% for x in mymembers %}
+      <li class="data-item">
+        <strong>Email:</strong> {{ x.email }}
+      </li>
+      <li class="data-item">
+        <strong>Full Name:</strong> {{ x.full_name }}
+      </li>
+      <li class="data-item">
+        <strong>Phone Number:</strong> {{ x.phone_number }}
+      </li>
+      <li class="data-item">
+        <strong>Education:</strong> {{ x.education }}
+      </li>
+      <li class="data-item">
+        <strong>Experience:</strong> {{ x.experience }}
+      </li>
+      <li class="data-item">
+        <strong>Skills:</strong> {{ x.skills }}
+      </li>
+      <li class="data-item">
+        <strong>Hobbies:</strong> {{ x.hobbies }}
+      </li>
+      <li class="data-item">
+        <strong>Foreign Languages:</strong> {{ x.foreign_languages }}
+      </li>
+    {% endfor %}
+    </ul>
+    
+  </div>
+</div>
+
+<div class="container">
+  <div class="data-container">
+    <h2 class="title">Your Applications</h2>
+
+    {% if ads %}
+    <ul>
+      {% for x in ads %}
+      <li class="data-item">
+        <strong>Job Title:</strong> <a href="{% url 'ad_page' ad_id=x.id%}" class="data-link">{{ x.job_title }}</a>
+      </li>
+        <li class="data-item">
+          <strong>Company Name:</strong> {{ x.company_name }}
+        </li>
+        <li class="data-item">
+          <strong>Job Location:</strong> {{ x.job_location }}
+        </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-container">
+      <p>No applications made</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  <a href="{% url 'edit_human_profile' %}" class="btn custom-button">Custom Profile</a>
+</div>
+
+</body>
+</html>

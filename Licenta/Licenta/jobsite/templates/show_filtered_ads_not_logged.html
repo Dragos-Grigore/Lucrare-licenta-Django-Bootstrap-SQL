@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+      @media (max-width: 768px) {
+        .container {
+          margin-top: 10px;
+        }
+      
+        .nav {
+          justify-content: center;
+          padding: 5px;
+        }
+      
+        .nav-item {
+          margin-right: 5px;
+        }
+      
+        h2.title {
+          font-size: 20px;
+          margin-top: 15px;
+          margin-bottom: 10px;
+        }
+      
+        .data-container {
+          padding: 15px;
+          margin-bottom: 10px;
+        }
+      
+        .empty-container {
+          padding: 5px;
+        }
+      }
+      
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+    }
+    
+    .container {
+        margin-top: 20px;
+    }
+    
+    .nav {
+        padding: 10px;
+        background-color: #b3d9ff;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+      }
+    
+    .nav-item {
+        list-style-type: none;
+        margin-right: 10px;
+    }
+    
+    .nav-item a {
+        color: #262626;
+        text-decoration: none;
+        font-weight: bold;
+    }
+        h1 {
+            margin-top: 40px;
+            text-align: center;
+            color: #17a2b8;
+        }
+          .container {
+            margin-top: 20px;
+          }
+        
+          .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+        
+          .data-container {
+            background-color: #e6e6e6;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+          }
+        
+          .empty-container {
+            background-color:  #e6e6e6;
+            padding: 10px;
+            border-radius: 5px;
+          }
+        </style>
+</head>
+<body>
+
+<div class="container">
+  <ul class="nav">
+    <li class="nav-item navbar-title">
+      JobFinder
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'hello' %}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'sign_up' %}">Sign up</a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'log' %}">Login</a>
+    </li>
+  </ul>
+</div>
+
+<div class="container">
+  <h2 class="title">Job Listings</h2>
+  
+  <div class="data-container">
+    <p>{{ mymembers|length }} ads found</p>
+    
+    {% if mymembers %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Job Title</th>
+            <th>Company Name</th>
+            <th>Location</th>
+            <th>Posted Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for x in mymembers %}
+            <tr>
+              <td>{{ x.job_title }}</td>
+              <td>{{ x.company_name }}</td>
+              <td>{{ x.job_location }}</td>
+              <td>{{ x.posted_date }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-container">
+        <p>No announcements available.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+</body>
+</html>
